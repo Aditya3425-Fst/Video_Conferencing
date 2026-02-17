@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
+import { connectDB } from './config/database';
 
 const app: Express = express();
 const PORT: number = parseInt(process.env.PORT || '3001', 10);
@@ -18,8 +19,19 @@ app.get('/', (_req: Request, res: Response) => {
   res.json({ message: 'Video Conferencing API Server' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Connect to MongoDB and start server
+const startServer = async (): Promise<void> => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 export default app;
